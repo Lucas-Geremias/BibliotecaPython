@@ -1,50 +1,39 @@
-from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
+import mysql.connector
 
-app = Flask(__name__)
 
-# Banco de dados
-def init_db():
-    conn = sqlite3.connect('livros.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS livros (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            titulo TEXT NOT NULL,
-            autor TEXT NOT NULL,
-            ano INTEGER,
-            genero TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
+def conectar():
+  conexao = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="",
+    database="biblioteca"
+  )
+  return conexao
 
-init_db()
 
-@app.route('/')
-def index():
-    conn = sqlite3.connect('livros.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM livros ORDER BY id DESC LIMIT 4')
-    livros = cursor.fetchall()
-    conn.close()
-    return render_template('index.html', livros=livros)
+def adicionar_livro(titulo, autor, ano_publicacao):
+  conexao = conectar()
+  cursor = conexao.cursor()
 
-@app.route('/adicionar', methods=['POST'])
-def adicionar():
-    titulo = request.form['titulo']
-    autor = request.form['autor']
-    ano = request.form['ano']
-    genero = request.form['genero']
-    conn = sqlite3.connect('livros.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO livros (titulo, autor, ano, genero) VALUES (?, ?, ?, ?)',
-                   (titulo, autor, ano, genero))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('index'))
-
-# Você pode adicionar rotas para editar, deletar e buscar também
-
-if __name__ == '__main__':
-    app.run(debug=True)
+  sql = "INSERT INTO livros(titulo, autor, ano_publicacao) VALUES (%s, %s, %s)"
+  
+  valores = (titulo, autor, ano_publicacao)
+  cursor.execute(sql,valores)
+  conexao.commit()
+  conexao.close()
+  print("Livro Adicionado com sucesso!!!!")
+  
+def listar_livros():
+  conexao = conectar()
+  cursor = conexao.cursor()
+  
+  cursor.execute("SELECT * FROM livros")
+  livros = cursor.fetchall #pega todos os resultados 
+  conexao.close()
+  
+  if livros:
+    print("lista de livros: ")
+    for livro in livros:
+      print(f"ID: {livro[0]} | Título: {livro[1]} | Autor: {livro[2]} | Ano: {livro[3]}")
+  else:
+    print("Nenhum livro encontrado.")
