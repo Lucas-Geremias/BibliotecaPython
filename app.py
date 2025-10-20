@@ -54,3 +54,38 @@ def atualizar_livros(id_livro, novo_titulo, novo_autor, novo_ano ):
   cursor.execute(sql, valores)
   conexao.commit()
   conexao.close()
+  print("Livro atualizado com sucesso!!!")
+  
+  ##DELETE - EXCLUIR UM LIVRO
+  
+  def excluir_livro(id_livro):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("DELETE FROM livros  WHERE id = %s", (id_livro,))
+    conexao.commit()
+    conexao.close()
+    
+    print("Livro excluido com sucesso")
+
+    
+    ##MENU 
+    def menu():
+      while true:
+        print("=== SISTEMA DE BIBLIOTECA ===")
+        print("1 - Adicionar")
+        print("2 - Listar Livros")
+        print("3 - Atualizar Livros")
+        print("4 - Excluir Livros")
+        print("0 - Sair")
+
+        opcao = input("Escolha uma opção")
+        
+        #Cadastrar livro
+        if opcao == "1":
+          titulo = input("Título: ")
+          autor = input("Autor: ")
+          ano = input("Ano de publicação: ")
+          adicionar_livro(titulo,autor,ano)
+          
+    
