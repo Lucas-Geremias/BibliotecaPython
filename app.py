@@ -37,3 +37,20 @@ def listar_livros():
       print(f"ID: {livro[0]} | Título: {livro[1]} | Autor: {livro[2]} | Ano: {livro[3]}")
   else:
     print("Nenhum livro encontrado.")
+
+#Atualizar os livros
+
+def atualizar_livros(id_livro, novo_titulo, novo_autor, novo_ano ):
+  conexao = conectar()
+  cursor = conexao.cursor()
+  
+  sql = """
+    UPDATE livros
+    SET titulo = %s, autor = %s, ano_pubicacao = %s
+    WHERE id %s
+  """
+  valores = (novo_titulo, novo_autor, novo_ano, id_livro)
+  
+  cursor.execute(sql, valores)
+  conexao.commit()
+  conexao.close()
